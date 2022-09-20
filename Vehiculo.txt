@@ -1,0 +1,125 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package logica;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import persistencia.ConexionBD;
+
+/**
+ *
+ * @author Hernán Gutiérrez Z
+ */
+public class Vehiculo {
+    private String Placa;
+    private String TipodeVehiculo;
+
+    public Vehiculo() {
+    }
+
+    public Vehiculo(String Placa, String TipodeVehiculo) {
+        this.Placa = Placa;
+        this.TipodeVehiculo = TipodeVehiculo;
+    }
+
+    public String getPlaca() {
+        return Placa;
+    }
+
+    public void setPlaca(String Placa) {
+        this.Placa = Placa;
+    }
+
+    public String getTipodeVehiculo() {
+        return TipodeVehiculo;
+    }
+
+    public void setTipodeVehiculo(String TipodeVehiculo) {
+        this.TipodeVehiculo = TipodeVehiculo;
+    }
+
+    @Override
+    public String toString() {
+        return "Vehiculo{" + "Placa=" + Placa + ", TipodeVehiculo=" + TipodeVehiculo + '}';
+    }
+    public List<Vehiculo> consultarVehiculos() {
+        List<Vehiculo>Vehiculo = new ArrayList<>();
+        ConexionBD conexion = new ConexionBD();
+        String sql = "SELECT * FROM Vehiculo;";
+        ResultSet rs = conexion.consultarBD(sql);
+        try {
+            Vehiculo a;
+            while (rs.next()) {
+                a = new Vehiculo();
+                a.setPlaca(rs.getString("Placa"));
+                a.setTipodeVehiculo(rs.getString("TipodeVehiculo"));
+                Vehiculo.add(a);
+            }
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+        } finally {
+            conexion.cerrarConexion();
+        }
+
+        return Vehiculo;
+    }
+public boolean guardarVehiculo() {
+        boolean exito = false;
+        ConexionBD conexion = new ConexionBD();
+        String sql="INSERT INTO Vehiculo (Placa, TipodeVehiculo) VALUES('"+Placa+"', '"+TipodeVehiculo+"');";
+        if(conexion.setAutoCommitBD(false)){
+            if(conexion.insertarBD(sql)){
+                exito=true;
+                conexion.commitBD();
+                conexion.cerrarConexion();
+            }else{
+                conexion.rollbackBD();
+                conexion.cerrarConexion();
+            }
+        }else{
+            conexion.cerrarConexion();
+        }
+        return exito;
+    }
+    public boolean actualizarVehiculo() {
+        boolean exito = false;
+        ConexionBD conexion = new ConexionBD();
+        String sql="UPDATE vehiculo SET TipodeVehiculo='"+TipodeVehiculo+"' WHERE Placa='"+Placa+"';";
+        if(conexion.setAutoCommitBD(false)){
+            if(conexion.actualizarBD(sql)){
+                exito=true;
+                conexion.commitBD();
+                conexion.cerrarConexion();
+            }else{
+                conexion.rollbackBD();
+                conexion.cerrarConexion();
+            }
+        }else{
+            conexion.cerrarConexion();
+        }
+        return exito;
+    }
+    public boolean eliminarVehiculo() {
+        boolean exito = false;
+        ConexionBD conexion = new ConexionBD();
+        String sql="DELETE FROM Vehiculo WHERE Placa='"+Placa+"';";
+        if(conexion.setAutoCommitBD(false)){
+            if(conexion.actualizarBD(sql)){
+                exito=true;
+                conexion.commitBD();
+                conexion.cerrarConexion();
+            }else{
+                conexion.rollbackBD();
+                conexion.cerrarConexion();
+            }
+        }else{
+            conexion.cerrarConexion();
+        }
+        return exito;
+        }
+}
